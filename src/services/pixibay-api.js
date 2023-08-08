@@ -11,3 +11,11 @@ export function getPhotos(search, page) {
     return Promise.reject(new Error('something wrong'));
   });
 }
+// return data in other format
+export const handleApiData = data => {
+  const newData = data.hits.map(el => {
+    return { id: el.id, webformatURL: el.webformatURL, largeImageURL: el.largeImageURL };
+  });
+
+  return newData;
+};

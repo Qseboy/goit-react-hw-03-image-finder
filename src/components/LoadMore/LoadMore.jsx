@@ -1,9 +1,9 @@
 import { LoadMoreButton } from './loadMore.styled';
 
 export default function LoadMore(props) {
-  const { handleButton } = props;
+  const { handleLoadMoreButton } = props;
   return (
-    <LoadMoreButton type="button" onClick={handleButton}>
+    <LoadMoreButton type="button" onClick={handleLoadMoreButton}>
       Load More
     </LoadMoreButton>
   );

@@ -2,15 +2,11 @@ import { ImageGalleryItemImage, ImageGalleryItemLi } from './imageGalleryItem.st
 import PropTypes from 'prop-types';
 
 export default function ImageGalleryItem(props) {
-  const { largeImageURL, webformatURL } = props;
+  const { largeImageURL, webformatURL, handleOpenModal } = props;
 
   return (
     <>
-      <ImageGalleryItemLi
-        onClick={() => {
-          props.handleOpenModal(largeImageURL);
-        }}
-      >
+      <ImageGalleryItemLi onClick={() => handleOpenModal(largeImageURL)}>
         <ImageGalleryItemImage src={webformatURL} alt="image" />
       </ImageGalleryItemLi>
     </>
@@ -19,6 +15,6 @@ export default function ImageGalleryItem(props) {
 
 ImageGalleryItem.propTypes = {
   handleOpenModal: PropTypes.func.isRequired,
-  largeImageURL: PropTypes.number.isRequired,
-  webformatURL: PropTypes.number.isRequired,
+  largeImageURL: PropTypes.string.isRequired,
+  webformatURL: PropTypes.string.isRequired,
 };
