@@ -6,7 +6,7 @@ import PropTypes from 'prop-types';
 
 export default class ImageGallery extends Component {
   render() {
-    const { photos, handleLoadMoreButton, loadMoreButton, handleOpenModal } = this.props;
+    const { photos, incrementPage, loadMoreButton, handleOpenModal } = this.props;
     return (
       <>
         {photos.length > 0 && (
@@ -22,14 +22,14 @@ export default class ImageGallery extends Component {
               ))}
           </ImageGalleryList>
         )}
-        {loadMoreButton && <LoadMore handleLoadMoreButton={handleLoadMoreButton} />}
+        {loadMoreButton && <LoadMore incrementPage={incrementPage} />}
       </>
     );
   }
 }
 
 ImageGallery.propTypes = {
-  handleLoadMoreButton: PropTypes.func.isRequired,
+  incrementPage: PropTypes.func.isRequired,
   handleOpenModal: PropTypes.func.isRequired,
   loadMoreButton: PropTypes.bool.isRequired,
   photos: PropTypes.arrayOf(

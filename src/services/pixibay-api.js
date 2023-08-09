@@ -12,8 +12,8 @@ export function getPhotos(search, page) {
   });
 }
 // return data in other format
-export const handleApiData = data => {
-  const newData = data.hits.map(el => {
+export const handleApiData = hits => {
+  const newData = hits.map(el => {
     return { id: el.id, webformatURL: el.webformatURL, largeImageURL: el.largeImageURL };
   });
 

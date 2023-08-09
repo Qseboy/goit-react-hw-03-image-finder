@@ -11,7 +11,6 @@ export class App extends Component {
     searchValue: '',
     photos: [],
     page: 1,
-    total: null,
     loadMoreButton: false,
     loader: false,
 
@@ -20,71 +19,38 @@ export class App extends Component {
   };
 
   async componentDidUpdate(prevProps, prevState) {
-    if (prevState.searchValue !== this.state.searchValue) {
+    if (prevState.searchValue !== this.state.searchValue || prevState.page !== this.state.page) {
       this.setState({ loader: true });
       try {
-        const data = await getPhotos(this.state.searchValue, 1);
-        const formatData = handleApiData(data);
+        const data = await getPhotos(this.state.searchValue, this.state.page);
+        const { totalHits, hits } = data;
 
-        // check total photos
-        if (!data.total) {
+        const formatData = handleApiData(hits);
+        toast.success(`Was find ${totalHits} images`);
+
+        // check loadMoreButton
+        this.setState({ loadMoreButton: this.state.page < Math.ceil(totalHits / 12) });
+
+        // check if API find no Images[]
+        if (!totalHits) {
           toast.warn(`Not found images by this name - ${this.state.searchValue}`);
-          this.setState({ loader: false, photos: [], loadMoreButton: false });
           return;
         }
 
-        this.setState(
-          { photos: formatData, loadMoreButton: true, total: data.total, loader: false, page: 1 },
-          () => {
-            this.handleCheckLoadMoreButton();
-            toast.success(`Was find ${this.state.total} images`);
-          }
-        );
+        this.setState(prevState => ({
+          photos: [...prevState.photos, ...formatData],
+        }));
       } catch (err) {
         alert(err);
-      }
-    }
-
-    if (prevState.page !== this.state.page) {
-      if (this.state.page === 1) return;
-
-      this.setState({ loader: true });
-      const nextPage = this.state.page + 1;
-      try {
-        const data = await getPhotos(this.state.searchValue, nextPage);
-        const formatData = handleApiData(data);
-
-        this.setState(
-          { photos: [...this.state.photos, ...formatData], loader: false },
-          this.handleCheckLoadMoreButton
-        );
-      } catch (err) {
-        alert(err);
+      } finally {
+        this.setState({ loader: false });
       }
     }
   }
 
-  // check collection photos, and hide loadMoreButton if need
-  handleCheckLoadMoreButton = () => {
-    const { total, photos } = this.state;
-    if (Math.round(total - photos.length) === 0) {
-      this.setState({ loadMoreButton: false });
-      return;
-    }
-  };
-
   // load more button
-  handleLoadMoreButton = () => {
+  incrementPage = () => {
     this.setState({ page: this.state.page + 1 });
-  };
-
-  // descturct
-  handleApiData = data => {
-    const newData = data.hits.map(el => {
-      return { id: el.id, webformatURL: el.webformatURL, largeImageURL: el.largeImageURL };
-    });
-
-    return newData;
   };
 
   // close \ open modal
@@ -95,7 +61,7 @@ export class App extends Component {
   };
 
   handleSubmit = searchValue => {
-    this.setState({ searchValue });
+    this.setState({ searchValue, photos: [], page: 1 });
   };
 
   handleOpenModal = largeImageURL => {
@@ -109,7 +75,7 @@ export class App extends Component {
         {this.state.loader && <Loader />}
         <ImageGallery
           photos={this.state.photos}
-          handleLoadMoreButton={this.handleLoadMoreButton}
+          incrementPage={this.incrementPage}
           loadMoreButton={this.state.loadMoreButton}
           handleOpenModal={this.handleOpenModal}
         />
